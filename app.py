@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 import hmac
 import hashlib
+import logging
 from flask_injector import FlaskInjector
 from injector import inject
 
@@ -25,6 +26,8 @@ def hello_world():
 @inject
 @app.route('/', methods=['POST'])
 def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierService):
+    logging.warning("Entered WebHook")
+
     request_body = request.get_data()
     request_signature = request.headers['X-Sqreen-Integrity']
 
@@ -34,7 +37,7 @@ def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierServ
 
     log_notifier.send_message("hey, you seem to have a problem - log")
     slack_notifier.send_message("hey, you seem to have a problem - slack")
-    
+
     return request_body, int(status)
 
 
@@ -44,6 +47,10 @@ def configure(binder):
 
 
 if __name__ == '__main__':
+    logging.warning("started fine")
     FlaskInjector(app=app, modules=[configure])
+    logging.warning("Flask Injector Set")
     app.run(host="0.0.0.0", port=int("8081"), debug=True)
+    logging.warning("App Running")
+
 
