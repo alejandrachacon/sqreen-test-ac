@@ -7,10 +7,7 @@ from injector import inject
 
 from Services.NotifierService import SlackNotifierService, LogNotifierService
 
-from dependencies import configure
-
 app = Flask(__name__)
-FlaskInjector(app=app, modules=[configure])
 
 
 def check_signature(secret_key, request_signature, request_body):
@@ -35,12 +32,18 @@ def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierServ
                             request_signature, bytes(request_body))
     status = 200 if check else 401
 
-
     log_notifier.send_message("hey, you seem to have a problem - log")
     slack_notifier.send_message("hey, you seem to have a problem - slack")
+    
     return request_body, int(status)
 
 
+def configure(binder):
+    binder.bind(SlackNotifierService, to=SlackNotifierService, scope=singleton)
+    binder.bind(LogNotifierService, to=LogNotifierService, scope=singleton)
+
+
 if __name__ == '__main__':
+    FlaskInjector(app=app, modules=[configure])
     app.run(host="0.0.0.0", port=int("8081"), debug=True)
 
