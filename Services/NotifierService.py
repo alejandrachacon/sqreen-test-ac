@@ -1,5 +1,5 @@
 import logging
-from slackclient import SlackClient
+from slack import SlackClient
 
 
 class INotifier(type):
