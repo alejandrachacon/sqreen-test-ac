@@ -1,5 +1,5 @@
 import logging
-from slack import SlackClient
+import slack
 
 
 class INotifier(type):
@@ -30,16 +30,16 @@ class SlackNotifierService(NotifierService):
 
     class SlackNotifier:
         channel = 'general'
+        token = 'xoxp-973929692242-986262486724-987762198995-7dbb397fa399d773e3d93a6e672cf30e'
 
         def __init__(self):
             print("Init Slack Notifier Inner Class")
 
         def send(self, message):
-            token = 'xoxp-973929692242-986262486724-987762198995-7dbb397fa399d773e3d93a6e672cf30e'
-            sc = SlackClient(token)
-            sc.api_call('chat.postMessage', channel=self.channel,
-                        text=message, username='My Sqreen Bot',
-                        icon_emoji=':robot_face:')
+            client = slack.WebClient(self.token, timeout=30)
+            client.chat_postMessage(
+                channel=self.channel,
+                text=message)
             print("slack msg sent.")
 
     def __init__(self):
