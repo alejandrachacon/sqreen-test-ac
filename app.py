@@ -11,6 +11,11 @@ from Services.NotifierService import SlackNotifierService, LogNotifierService
 app = Flask(__name__)
 
 
+def configure(binder):
+    binder.bind(SlackNotifierService, to=SlackNotifierService(), scope=singleton)
+    binder.bind(LogNotifierService, to=LogNotifierService(), scope=singleton)
+
+
 def check_signature(secret_key, request_signature, request_body):
     hasher = hmac.new(secret_key, request_body, hashlib.sha256)
     dig = hasher.hexdigest()
@@ -23,7 +28,7 @@ def hello_world():
     return 'hello world from sqreen redirect'
 
 
-@inject(SlackNotifierService, LogNotifierService)
+@inject
 @app.route('/', methods=['POST'])
 def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierService):
     logging.warning("Entered WebHook")
@@ -41,14 +46,12 @@ def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierServ
     return request_body, int(status)
 
 
-def configure(binder):
-    binder.bind(SlackNotifierService, to=ClassProvider(SlackNotifierService), scope=singleton)
-    binder.bind(LogNotifierService, to=ClassProvider(LogNotifierService), scope=singleton)
+
+FlaskInjector(app=app, modules=[configure])
 
 
 if __name__ == '__main__':
     logging.warning("started fine")
-    FlaskInjector(app=app, modules=[configure])
     logging.warning("Flask Injector Set")
     app.run(host="0.0.0.0", port=int("8081"), debug=True)
     logging.warning("App Running")
