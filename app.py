@@ -23,7 +23,7 @@ def hello_world():
     return 'hello world from sqreen redirect'
 
 
-@inject(slack_notifier=SlackNotifierService, log_notifier=LogNotifierService)
+@inject(SlackNotifierService, LogNotifierService)
 @app.route('/', methods=['POST'])
 def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierService):
     logging.warning("Entered WebHook")
@@ -42,8 +42,8 @@ def web_hook(slack_notifier: SlackNotifierService, log_notifier: LogNotifierServ
 
 
 def configure(binder):
-    binder.bind(slack_notifier, to=ClassProvider(SlackNotifierService), scope=singleton)
-    binder.bind(log_notifier, to=ClassProvider(LogNotifierService), scope=singleton)
+    binder.bind(SlackNotifierService, to=ClassProvider(SlackNotifierService), scope=singleton)
+    binder.bind(LogNotifierService, to=ClassProvider(LogNotifierService), scope=singleton)
 
 
 if __name__ == '__main__':
