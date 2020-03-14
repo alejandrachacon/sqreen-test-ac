@@ -12,8 +12,8 @@ app = Flask(__name__)
 
 
 def configure(binder):
-    binder.bind(SlackNotifierService, to=SlackNotifierService(), scope=singleton)
-    binder.bind(LogNotifierService, to=LogNotifierService(), scope=singleton)
+    binder.bind(SlackNotifierService, to=SlackNotifierService())
+    binder.bind(LogNotifierService, to=LogNotifierService())
 
 
 def check_signature(secret_key, request_signature, request_body):
